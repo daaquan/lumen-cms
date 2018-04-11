@@ -1,60 +1,67 @@
 <template>
-  <div column align-center class="login-page">
+  <div column align-center class="login-page white ma-5">
     <div>
-      <v-btn @click="isLogin=true" flat :class="{'primary--text':isLogin}">Login</v-btn>
-      <v-btn @click="isLogin=false" flat :class="{'primary--text':!isLogin}">Register</v-btn>
-    </div>
-    <div class="white pa-5 elevation-3">
-      <template v-if="isLogin">
-        <lc-form-container ref="form">
+      <nuxt-link to="/">
+        <lc-main-logo></lc-main-logo>
+      </nuxt-link>
+      <v-tabs>
+        <v-tab>
+          Login
+        </v-tab>
+        <v-tab>
+          Register
+        </v-tab>
+        <v-tab-item>
+          <lc-form-container ref="form">
 
-          <v-alert :value="err" v-text="err"/>
+            <v-alert :value="err" v-text="err"/>
 
-          <v-text-field type="email" required name="email"
-                        v-model="credentials.email"
-                        label="Enter your email" @keyup.enter="onLogin"/>
-          <v-text-field v-model="credentials.password" name="password"
-                        required type="password"
-                        label="Enter your password" @keyup.enter="onLogin"/>
-          <v-btn flat @click="onLogin" class="primary--text" :loading="loading">Login</v-btn>
-        </lc-form-container>
-      </template>
-      <template v-else>
-        <lc-form-container ref="formRegister">
-          <template v-if="!showAfterRegister">
-            <v-text-field type="text" v-model="credentials.firstName"
-                          name="firstName"
-                          label="First Name"
-                          required/>
-            <v-text-field type="text" v-model="credentials.lastName"
-                          name="lastName"
-                          label="Last Name"
-                          required/>
             <v-text-field type="email" required name="email"
                           v-model="credentials.email"
-                          label="Enter your email"
-                          @keyup.enter="onRegister"/>
-            <v-text-field v-model="credentials.password"
-                          name="password"
+                          label="Enter your email" @keyup.enter="onLogin"/>
+            <v-text-field v-model="credentials.password" name="password"
                           required type="password"
-                          label="Enter your password"
-                          @keyup.enter="onRegister"/>
-            <v-text-field v-model="passwordRepeat"
-                          name="passwordRepeat"
-                          required type="password"
-                          :rules="[samePasswordRule]"
-                          label="Repeat your password"
-                          @keyup.enter="onRegister"/>
-            <v-btn flat @click="onRegister"
-                   class="primary--text"
-                   :loading="loading">Register
-            </v-btn>
-          </template>
-          <v-alert color="info" v-model="showAfterRegister" icon="info">
-            Your register is successful. Please wait for the admin to apply your privileges.
-          </v-alert>
-        </lc-form-container>
-      </template>
+                          label="Enter your password" @keyup.enter="onLogin"/>
+            <v-btn flat @click="onLogin" class="primary--text" :loading="loading">Login</v-btn>
+          </lc-form-container>
+        </v-tab-item>
+        <v-tab-item>
+          <lc-form-container ref="formRegister">
+            <template v-if="!showAfterRegister">
+              <v-text-field type="text" v-model="credentials.firstName"
+                            name="firstName"
+                            label="First Name"
+                            required/>
+              <v-text-field type="text" v-model="credentials.lastName"
+                            name="lastName"
+                            label="Last Name"
+                            required/>
+              <v-text-field type="email" required name="email"
+                            v-model="credentials.email"
+                            label="Enter your email"
+                            @keyup.enter="onRegister"/>
+              <v-text-field v-model="credentials.password"
+                            name="password"
+                            required type="password"
+                            label="Enter your password"
+                            @keyup.enter="onRegister"/>
+              <v-text-field v-model="passwordRepeat"
+                            name="passwordRepeat"
+                            required type="password"
+                            :rules="[samePasswordRule]"
+                            label="Repeat your password"
+                            @keyup.enter="onRegister"/>
+              <v-btn flat @click="onRegister"
+                     class="primary--text"
+                     :loading="loading">Register
+              </v-btn>
+            </template>
+            <v-alert color="info" v-model="showAfterRegister" icon="info">
+              Your register is successful. Please wait for the admin to apply your privileges.
+            </v-alert>
+          </lc-form-container>
+        </v-tab-item>
+      </v-tabs>
     </div>
   </div>
 </template>
