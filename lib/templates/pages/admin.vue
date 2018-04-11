@@ -104,17 +104,15 @@
         try {
           const result = await this.mutateGql({mutation: userSignInMutationGql, variables}, 'authenticateUser')
           await this.$store.dispatch('LOGIN', result)
+          if (this.$store.getters.canEdit) {
+            this.$router.push('/')
+          } else {
+            this.$store.commit('SET_ERROR', 'You are not logged in or you missing some priviliges')
+          }
         } catch (e) {
-          this.loading = false
           this.$store.commit('SET_ERROR', e.message)
-          return
-        }
-
-        this.loading = false
-        if (this.$store.getters.canEdit) {
-          this.$router.push('/')
-        } else {
-          this.$store.commit('SET_ERROR', 'You are not logged in or you missing some priviliges')
+        } finally {
+          this.loading = false
         }
       },
       samePasswordRule (value) {
