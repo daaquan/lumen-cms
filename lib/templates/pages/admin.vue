@@ -12,6 +12,7 @@
           Register
         </v-tab>
         <v-tab-item>
+
           <lc-form-container ref="form">
 
             <v-alert :value="err" v-text="err"/>
@@ -29,6 +30,7 @@
           <lc-form-container ref="formRegister">
             <template v-if="!showAfterRegister">
               <v-text-field type="text" v-model="credentials.firstName"
+
                             name="firstName"
                             label="First Name"
                             required/>
@@ -69,6 +71,7 @@
 <script>
   import userSignInMutationGql from '../gql/user/userSignInMutation.gql'
   import signupUserGql from '../gql/user/signupUser.gql'
+  import hasArticlesGql from '../gql/article/hasArticles.gql'
 
   export default {
     layout: 'admin',
@@ -84,12 +87,25 @@
         err: null,
         passwordRepeat: null,
         isLogin: true,
-        showAfterRegister: false
+        showAfterRegister: false,
+        hasArticles: false
       }
     },
     mounted () {
       if (this.$store.getters.canEdit) {
-        this.$router.push('/')
+        const redirectUrl = this.hasArticles ? '/' : {name: 'install'}
+        this.$router.push(redirectUrl)
+      }
+    },
+    async asyncData ({app}) {
+      const apollo = app.apolloProvider.defaultClient
+      const res = await apollo.query({
+        query: hasArticlesGql
+      }).then(({data}) => data.allArticles)
+      if (res.length) {
+        return {
+          hasArticles: true
+        }
       }
     },
     methods: {
@@ -104,15 +120,22 @@
         try {
           const result = await this.mutateGql({mutation: userSignInMutationGql, variables}, 'authenticateUser')
           await this.$store.dispatch('LOGIN', result)
-          if (this.$store.getters.canEdit) {
-            this.$router.push('/')
-          } else {
-            this.$store.commit('SET_ERROR', 'You are not logged in or you missing some priviliges')
-          }
         } catch (e) {
-          this.$store.commit('SET_ERROR', e.message)
-        } finally {
           this.loading = false
+          this.$store.commit('SET_ERROR', (e && e.message) || e)
+          return Promise.reject(e)
+        }
+
+        this.loading = false
+
+        if (this.$store.getters.canEdit) {
+          const redirectUrl = this.hasArticles ? '/' : {name: 'install'}
+          this.$router.push(redirectUrl)
+          return Promise.resolve(true)
+        } else {
+          const err = 'You are not logged in or you missing some priviliges'
+          this.$store.commit('SET_ERROR', err)
+          return Promise.reject(err)
         }
       },
       samePasswordRule (value) {
