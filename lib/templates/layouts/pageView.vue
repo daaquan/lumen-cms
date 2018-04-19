@@ -3,6 +3,7 @@
     <lc-side-nav v-if="hasSecondaryNav"/>
     <lc-main-sidebar/>
     <lc-page-toolbar/>
+    <lc-spinner/>
     <v-content class="page-view-layout"
                :class="{'is-loading':$store.state.lc.cmsLoading, 'content-edit-mode': $store.state.lc.isContentEditMode}">
       <v-container fluid
@@ -15,7 +16,10 @@
     <lc-main-footer/>
     <lc-error-widget/>
 
-    <lc-admin-bar v-if="$store.getters.canEdit"/>
+    <lc-admin-bar v-if="$store.getters.canEdit"
+                  :edit-route="{name: 'articleEdit', params: {id: $store.state.lc.pageProps.articleId}}"
+                  :add-route="{name:'articleEdit'}"
+                  :content-edit-toggle="true"/>
   </v-app>
 </template>
 <script>
